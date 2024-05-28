@@ -3,7 +3,7 @@
 
 Zouhair Nasser , Majd Al-Shalabi , Abd Al-Rahman Gwaish , Ayman Muhi Al-Deen , Mohammad Nashawati
   
-## Folders  
+## Setup  
 
   **ir-typescript** contain project interfaces built with Next.js
 
