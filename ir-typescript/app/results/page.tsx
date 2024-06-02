@@ -7,25 +7,19 @@ import Link from "next/link";
 export default function WikiResults() {
   const params = useSearchParams();
   const [results, setResults] = useState<Array<any>>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     if (params.get("search") && params.get("dataset")) {
+      setLoading(true);
       search(params.get("search") as string, params.get("dataset") as string)
         .then((res) => {
-          console.log(res);
-          const mappedResults = [];
-          for (const key in res) {
-            if (Object.prototype.hasOwnProperty.call(res, key)) {
-              const text = res[key];
-              mappedResults.push({
-                id: key,
-                text,
-              });
-            }
-          }
-          setResults(mappedResults);
+          setResults(res);
         })
         .catch((err) => {
           console.error(err);
+        })
+        .finally(() => {
+          setLoading(false);
         });
     }
   }, []);
@@ -45,7 +39,15 @@ export default function WikiResults() {
           {results.map((el, index) => {
             return <ResultCard key={index} result={el}></ResultCard>;
           })}
-          {results.length === 0 && (
+          {loading && (
+            <div className="text-center text-white my-12">
+              <span className="text-2xl opacity-75">
+                Loading Results ⌛ ...
+              </span>
+              <br></br>
+            </div>
+          )}
+          {results.length === 0 && !loading && (
             <div className="text-center text-white my-12">
               <span className="text-2xl opacity-75">
                 There is nothing to see here 🌵 ...

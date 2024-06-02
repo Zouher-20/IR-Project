@@ -1,41 +1,42 @@
-# Service to load datasets documents
-import os
 import pandas as pd
 
 
 def load_wiki_docs():
-    """
-    Loads wiki dataset
-    """
-
-    path = "assets/wiki/documents.slice.csv"
-    return pd.read_csv(path)
-    # documents = {}
-
-    # for index, row in data.iterrows():
-    #     doc_id = row["id_right"]
-    #     doc_content = row["text_right"]
-    #     documents[doc_id] = doc_content
-
-    # return documents
-
-
-def lookup_doc(docs: pd.DataFrame, id, text_key):
-    return docs.loc[id, text_key]  # Access text using label-based indexing
+    path = "assets/wiki/documents.csv"
+    return pd.read_csv(path).set_index("id_right", drop=False)
 
 
 def load_quora_docs():
-    """
-    Loads quora dataset
-    """
+    path = "assets/quora/corpus.jsonl"
+    return pd.read_json(path, lines=True).set_index("_id", drop=False)
 
-    path = "assets/quora/corpus.slice.jsonl"
-    data = pd.read_json(path, lines=True)
-    documents = {}
 
-    for index, row in data.iterrows():
-        doc_id = row["_id"]
-        doc_content = row["text"]
-        documents[doc_id] = doc_content
+def load_wiki_qrels(qrels_file="assets/wiki/training/qrels"):
+    qrels = {}
+    with open(qrels_file, "r", encoding="utf-8") as f:
+        for line in f:
+            qid, _, docid, relevance = line.strip().split("\t")
+            qrels.setdefault(qid, []).append(docid)
+    return qrels
 
-    return documents
+
+def load_quora_qrels(qrels_file="assets/quora/qrels/dev.tsv"):
+    qrels = {}
+    i = 0
+    with open(qrels_file, "r", encoding="utf-8") as f:
+        for line in f:
+            if i == 0:
+                i += 1
+                continue
+            i += 1
+            qid, docid, relevance = line.strip().split("\t")
+            qrels.setdefault(qid, []).append(docid)
+    return qrels
+
+
+def load_wiki_queries(queries_file="assets/wiki/training/queries.csv"):
+    return pd.read_csv(queries_file).set_index("id_left", drop=False)
+
+
+def load_quora_queries(queries_file="assets/quora/queries.jsonl"):
+    return pd.read_json(queries_file, lines=True).set_index("_id", drop=False)
