@@ -22,7 +22,6 @@ quora_index = build_index(
     quora_vectorizer,
 )
 
-# quora_docs = load_quora_docs()
 
 app = Flask(__name__)
 

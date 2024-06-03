@@ -29,53 +29,10 @@ def get_queries_results(
     return retrieved
 
 
-def evaluate_ir_system(qrels: dict, retrieved_documents: dict):
-    average_precisions = {}
-
-    for query_id, relevant_docs in qrels.items():
-        precision_scores = {}
-        recall_scores = {}
-        retrieved_list = retrieved_documents.get(int(query_id), [])
-        relevant_count = len(relevant_docs)
-
-        retrieved_positions = {doc: i + 1 for i, doc in enumerate(retrieved_list)}
-
-        true_positives = 0
-        for i, doc in enumerate(retrieved_list):
-            if str(doc) in relevant_docs:
-                true_positives += 1
-                precision = true_positives / (i + 1)
-                recall = true_positives / relevant_count
-                precision_scores[query_id, i + 1] = precision
-                recall_scores[query_id, i + 1] = recall
-
-        average_precisions[query_id] = sum(precision_scores.values()) / relevant_count
-
-    mean_average_precision = sum(average_precisions.values()) / len(average_precisions)
-
-    return {
-        "precision": precision_scores,
-        "recall": recall_scores,
-        "average_precision": average_precisions,
-        "mean_average_precision": mean_average_precision,
-    }
-
-
-def evaluate_ir_system2(qrels: dict, retrieved_documents: dict) -> float:
-    """
-    This function evaluates an information retrieval system and returns the mean average precision at cutoff 10 (MAP@10).
-
-    Args:
-        qrels: A dictionary mapping query IDs to lists of (document ID, relevance) tuples.
-        retrieved_documents: A dictionary mapping query IDs to ranked lists of document IDs.
-
-    Returns:
-        The mean average precision at cutoff 10 (MAP@10).
-    """
+def evaluate_ir_system(qrels: dict, retrieved_documents: dict) -> float:
     precisions_at_10 = {}
 
     for query_id, relevant_docs in qrels.items():
-        ap_num = 0
         retrieved_list = retrieved_documents.get(int(query_id), [])
         if len(retrieved_list) >= 10:
             relevant_at_10 = [
