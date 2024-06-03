@@ -20,7 +20,7 @@ def build_index(documents, index_file, text_key, vectorizer):
         index = load_file(index_file)
         return index
 
-    dtm = vectorizer.fit_transform(documents[text_key])
+    dtm = vectorizer.transform(documents[text_key])
     save_file(dtm, index_file)
     return dtm
 
